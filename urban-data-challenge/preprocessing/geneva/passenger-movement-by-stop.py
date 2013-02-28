@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 '''
-Given a csv file of passenger stops, genereate a json list of
+Given a csv file of passenger stops, generate a json list of
 (time, stopCode, passengerDelta) ordered by time.
 Only items for which delta is non-zero are returned.
 '''
