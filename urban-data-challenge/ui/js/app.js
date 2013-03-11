@@ -53,6 +53,17 @@ require(['jquery', 'lib/q',  'lib/hot-cold-map', 'lib/request_anim_frame', 'lib/
     }
 
 
+    function drawMarkers() {
+        console.log('draw markers');
+    }
+
+
+    function dataReady() {
+        drawMarkers();
+        drawNextEvent();
+    }
+
+
     // This does not preserve aspect ratio!
     function normalizedCoords(d) {
         var t, bounds, result, stop, c;
@@ -93,7 +104,7 @@ require(['jquery', 'lib/q',  'lib/hot-cold-map', 'lib/request_anim_frame', 'lib/
         function (rawStopData, rawPassengerData) {
             stopCoords = normalizedCoords(rawStopData);
             passengerData = rawPassengerData;
-            drawNextEvent();
+            dataReady();
         },
         logAjaxError
     ).fail( function (error) { console.log(error); });
