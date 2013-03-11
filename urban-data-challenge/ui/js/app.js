@@ -55,6 +55,10 @@ require(['jquery', 'lib/q',  'lib/hot-cold-map', 'lib/request_anim_frame', 'lib/
 
     function drawMarkers() {
         console.log('draw markers');
+        // Use one of these?
+        // http://projects.nickstakenburg.com/tipped/documentation
+        // http://craigsworks.com/projects/qtip2/demos/#ajax
+        // http://www.opentip.org/
     }
 
 
