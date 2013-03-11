@@ -8,7 +8,7 @@ require.config({
 });
 
 
-require(['jquery', 'lib/q',  'lib/hot-cold-map', 'lib/request_anim_frame', 'lib/transform'], function ($, Q, hot_cold_map) {
+require(['jquery', 'lib/q',  'lib/hot-cold-map', 'lib/request_anim_frame', 'lib/transform'], function ($, Q, hcmap) {
     "use strict";
 
     var stopCoords, passengerData, mainCanvas;
@@ -34,18 +34,16 @@ require(['jquery', 'lib/q',  'lib/hot-cold-map', 'lib/request_anim_frame', 'lib/
 
 
     function draw(event) {
-        var coords, delta, date, ctx;
+        var coords, delta, date, ctx, score;
   
         coords = stopCoords[event.s];
-        // delta = event.d;
+        delta = event.d;
+        score = delta / 50; // XXX arbitrary
         // date = parseDate(event.t);
         // console.log([coords, delta, date]);
-
-        ctx = mainCanvas.getContext("2d");
-        ctx.beginPath();
-        ctx.arc(coords[0], coords[1], 2, 0, Math.PI * 2, true);
-        ctx.closePath();
-        ctx.fill();
+        
+        ctx = mainCanvas.getContext("2d");        
+        hcmap.drawScore(ctx, coords[0], coords[1], score);
     }
 
 

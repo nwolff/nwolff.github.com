@@ -5,7 +5,7 @@ define(['./mout/math/clamp'], function (clamp) {
     "use strict";
 
     var radius, offset, darkCircleCanvas, lightCircleCanvas;
-    radius = 30;
+    radius = 15;
     offset = radius * 1.5;
 
     /**
