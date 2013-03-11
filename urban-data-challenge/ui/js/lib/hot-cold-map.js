@@ -1,6 +1,7 @@
 /*global define, document */
 
-define(['mout/math/clamp'], function (clamp) {
+
+define(['./mout/math/clamp'], function (clamp) {
     "use strict";
 
     var radius, offset, darkCircleCanvas, lightCircleCanvas;

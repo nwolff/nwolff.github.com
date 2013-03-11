@@ -3,7 +3,7 @@
 // Have to use lowercase 'jquery' otherwise jQuery won't recognise it's been loaded via AMD.
 require.config({
     paths: {
-        'jquery': 'lib/jquery-1.9.1.min'
+        'jquery': '../lib/jquery-1.9.1'
     }
 });
 

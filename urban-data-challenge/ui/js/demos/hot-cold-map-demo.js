@@ -1,6 +1,7 @@
 /*global define, document, requestAnimFrame, Stats */
 
-define(['./hot-cold-map', 'lib/stats.min', 'lib/request_anim_frame'], function (hot_cold_map, stats_ignored, request_anim_frame_ignored) {
+
+define(['../lib/hot-cold-map', '../lib/stats.min', '../lib/request_anim_frame'], function (hot_cold_map) {
     "use strict";
 
     var stats, mainCanvas, drawScore;

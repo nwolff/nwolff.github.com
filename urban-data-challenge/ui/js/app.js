@@ -8,7 +8,7 @@ require.config({
 });
 
 
-require(['jquery', 'lib/q.min',  'hot-cold-map', 'lib/json2'], function ($, Q, hot_cold_map) {
+require(['jquery', 'lib/q.min',  'hot-cold-map', 'lib/json2', 'lib/request_anim_frame'], function ($, Q, hot_cold_map) {
     "use strict";
 
     var stopData, passengerData;
@@ -17,7 +17,8 @@ require(['jquery', 'lib/q.min',  'hot-cold-map', 'lib/json2'], function ($, Q, h
         return JSON.parse(s, dateJsonAdapter);
     }
 
-    // Works for pseudo iso8601 (would need to fix this in the backend)
+
+    // Works for pseudo iso8601 (would need to fix the backend to return proper iso8601)
     function dateJsonAdapter (key, value) {
         var a;
         if (typeof value === 'string') {
@@ -27,7 +28,8 @@ require(['jquery', 'lib/q.min',  'hot-cold-map', 'lib/json2'], function ($, Q, h
             }
         }
         return value;
-    };
+    }
+
 
     function logAjaxError(jqXHR, textStatus, errorThrown) {
         console.log("error " + textStatus);
@@ -35,9 +37,23 @@ require(['jquery', 'lib/q.min',  'hot-cold-map', 'lib/json2'], function ($, Q, h
     }
 
 
+    function draw(event) {
+        console.log(event);
+    }
+
+
+    function drawNextEvent() {
+        requestAnimFrame(drawNextEvent);
+        alert('a');
+        var event = passengerData.pop();
+        draw(event);
+    }
+
+
     function onData() {
-        console.log(stopData);
-        console.log(passengerData);
+        drawNextEvent();
+        // console.log(stopData);
+        // console.log(passengerData);
     }
 
 
@@ -48,7 +64,7 @@ require(['jquery', 'lib/q.min',  'hot-cold-map', 'lib/json2'], function ($, Q, h
         // XXX: why did I need to use responseText?
         stopData = parse(rawStopData.responseText);
         passengerData = parse(rawPassengerData.responseText);
-        onData()
+        onData();
     }); // XXX error handling
 
 });
