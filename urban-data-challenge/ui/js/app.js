@@ -8,7 +8,7 @@ require.config({
 });
 
 
-require(['jquery', 'lib/q',  'lib/hot-cold-map', 'lib/request_anim_frame'], function ($, Q, hot_cold_map) {
+require(['jquery', 'lib/q',  'lib/hot-cold-map', 'lib/request_anim_frame', 'lib/transform'], function ($, Q, hot_cold_map) {
     "use strict";
 
     var stopCoords, passengerData, mainCanvas;
@@ -57,16 +57,16 @@ require(['jquery', 'lib/q',  'lib/hot-cold-map', 'lib/request_anim_frame'], func
 
     // This does not preserve aspect ratio!
     function normalizedCoords(d) {
-        var bounds, w, h, result, stop, c, x, y;
+        var t, bounds, result, stop, c;
         bounds = d.bounds;
-        w = bounds.maxx - bounds.minx;
-        h = bounds.maxy - bounds.miny;
+        var t = new Transform();
+        t.scale(mainCanvas.width / (bounds.maxx - bounds.minx),
+                mainCanvas.height / (bounds.maxy - bounds.miny));
+        t.translate(-bounds.minx, -bounds.miny);
         result = [];
         for(stop in d.stops) {
             c = d.stops[stop];
-            x = (c[0] - bounds.minx) / w * mainCanvas.width;
-            y = (c[1] - bounds.miny) / h * mainCanvas.height;
-            result[stop] = [x, y];
+            result[stop] = t.transformPoint(c[0], c[1]);
         }
         return result;
     }
