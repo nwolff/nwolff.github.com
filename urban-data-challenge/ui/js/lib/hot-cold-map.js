@@ -31,7 +31,7 @@ define(['./mout/math/clamp'], function (clamp) {
         var shadowOffset = 1000;
         ctx.shadowOffsetX = shadowOffset;
         ctx.shadowOffsetY = shadowOffset;
-        ctx.shadowBlur = 15;
+        ctx.shadowBlur = radius / 2;
         ctx.shadowColor = color;
         ctx.beginPath();
         ctx.arc(x - shadowOffset, y - shadowOffset, radius, 0, Math.PI * 2, true);
