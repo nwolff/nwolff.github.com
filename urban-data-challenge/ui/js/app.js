@@ -3,23 +3,19 @@
 // Have to use lowercase 'jquery' otherwise jQuery won't recognise it's been loaded via AMD.
 require.config({
     paths: {
-        'jquery': 'lib/jquery-1.9.1.min'
+        'jquery': 'lib/jquery-1.9.1'
     }
 });
 
 
-require(['jquery', 'lib/q.min',  'hot-cold-map', 'lib/json2', 'lib/request_anim_frame'], function ($, Q, hot_cold_map) {
+require(['jquery', 'lib/q',  'lib/hot-cold-map', 'lib/request_anim_frame'], function ($, Q, hot_cold_map) {
     "use strict";
 
     var stopData, passengerData;
 
-    function parse(s) {
-        return JSON.parse(s, dateJsonAdapter);
-    }
-
 
     // Works for pseudo iso8601 (would need to fix the backend to return proper iso8601)
-    function dateJsonAdapter (key, value) {
+    function parseDate(value) {
         var a;
         if (typeof value === 'string') {
             a = /^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2}):(\d{2}(?:\.\d*)?)Z?$/.exec(value);
@@ -38,13 +34,17 @@ require(['jquery', 'lib/q.min',  'hot-cold-map', 'lib/json2', 'lib/request_anim_
 
 
     function draw(event) {
-        console.log(event);
+        var stop, stop_coords, delta, date;
+        stop = event.s;
+        stop_coords = stopData.stops[stop];
+        delta = event.d;
+        date = parseDate(event.t);
+        console.log('aa');
     }
 
 
     function drawNextEvent() {
         requestAnimFrame(drawNextEvent);
-        alert('a');
         var event = passengerData.pop();
         draw(event);
     }
@@ -52,19 +52,19 @@ require(['jquery', 'lib/q.min',  'hot-cold-map', 'lib/json2', 'lib/request_anim_
 
     function onData() {
         drawNextEvent();
-        // console.log(stopData);
-        // console.log(passengerData);
     }
 
 
     Q.all([
         $.getJSON('data/gva-stops.json'),
         $.getJSON('data/gva-first-morning.json')
-    ]).spread(function (rawStopData, rawPassengerData) {
-        // XXX: why did I need to use responseText?
-        stopData = parse(rawStopData.responseText);
-        passengerData = parse(rawPassengerData.responseText);
-        onData();
-    }); // XXX error handling
+    ]).spread(
+        function (rawStopData, rawPassengerData) {
+            stopData = rawStopData;
+            passengerData = rawPassengerData;
+            onData();
+        },
+        logAjaxError
+    ).fail( function (error) { console.log(error); });
 
 });
