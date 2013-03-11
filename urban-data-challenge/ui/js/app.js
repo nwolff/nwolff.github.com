@@ -37,20 +37,15 @@ require(['jquery', 'lib/q',  'lib/hot-cold-map', 'lib/request_anim_frame'], func
         var coords, delta, date, ctx;
   
         coords = stopCoords[event.s];
-        delta = event.d;
+        // delta = event.d;
         // date = parseDate(event.t);
         // console.log([coords, delta, date]);
 
         ctx = mainCanvas.getContext("2d");
-        
-        // Zero at bottom left
-        ctx.translate(0, mainCanvas.height);
-        ctx.scale(1, -1);
         ctx.beginPath();
-        ctx.arc(coords[0], coords[1], 3, 0, Math.PI * 2, true);
+        ctx.arc(coords[0], coords[1], 2, 0, Math.PI * 2, true);
         ctx.closePath();
         ctx.fill();
-
     }
 
 
@@ -85,6 +80,11 @@ require(['jquery', 'lib/q',  'lib/hot-cold-map', 'lib/request_anim_frame'], func
     mainCanvas.width = 600;
     mainCanvas.height = 600;
     document.body.appendChild(mainCanvas);
+    // Zero at bottom left
+    var ctx;
+    ctx = mainCanvas.getContext("2d");
+    ctx.translate(0, mainCanvas.height);
+    ctx.scale(1, -1);
 
     Q.all([
         $.getJSON('data/gva-stops.json'),
