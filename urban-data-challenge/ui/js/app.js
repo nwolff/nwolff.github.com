@@ -41,7 +41,7 @@ require(['jquery', 'lib/q',  'lib/hot-cold-map', 'lib/request_anim_frame', 'lib/
         score = delta / 50; // XXX arbitrary
         // date = parseDate(event.t);
         // console.log([coords, delta, date]);
-        
+
         ctx = mainCanvas.getContext("2d");        
         hcmap.drawScore(ctx, coords[0], coords[1], score);
     }
@@ -83,6 +83,8 @@ require(['jquery', 'lib/q',  'lib/hot-cold-map', 'lib/request_anim_frame', 'lib/
     ctx = mainCanvas.getContext("2d");
     ctx.translate(0, mainCanvas.height);
     ctx.scale(1, -1);
+    ctx.fillStyle = 'rgb(0,0,0)';
+    ctx.fillRect(0, 0, mainCanvas.width, mainCanvas.height);
 
     Q.all([
         $.getJSON('data/gva-stops.json'),
