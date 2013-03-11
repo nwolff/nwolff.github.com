@@ -11,7 +11,7 @@ require.config({
 require(['jquery', 'lib/q',  'lib/hot-cold-map', 'lib/request_anim_frame'], function ($, Q, hot_cold_map) {
     "use strict";
 
-    var stopData, passengerData;
+    var stopCoords, passengerData, mainCanvas;
 
 
     // Works for pseudo iso8601 (would need to fix the backend to return proper iso8601)
@@ -34,37 +34,69 @@ require(['jquery', 'lib/q',  'lib/hot-cold-map', 'lib/request_anim_frame'], func
 
 
     function draw(event) {
-        var stop, stop_coords, delta, date;
-        stop = event.s;
-        stop_coords = stopData.stops[stop];
+        var coords, delta, date, ctx;
+  
+        coords = stopCoords[event.s];
         delta = event.d;
-        date = parseDate(event.t);
-        console.log('aa');
+        // date = parseDate(event.t);
+        // console.log([coords, delta, date]);
+
+        ctx = mainCanvas.getContext("2d");
+        
+        // Zero at bottom left
+        ctx.translate(0, mainCanvas.height);
+        ctx.scale(1, -1);
+        ctx.beginPath();
+        ctx.arc(coords[0], coords[1], 3, 0, Math.PI * 2, true);
+        ctx.closePath();
+        ctx.fill();
+
     }
 
 
     function drawNextEvent() {
         requestAnimFrame(drawNextEvent);
-        var event = passengerData.pop();
-        draw(event);
+        draw(passengerData.pop());
     }
 
 
-    function onData() {
-        drawNextEvent();
+    // This does not preserve aspect ratio!
+    function normalizedCoords(d) {
+        var bounds, w, h, result, stop, c, x, y;
+        bounds = d.bounds;
+        w = bounds.maxx - bounds.minx;
+        h = bounds.maxy - bounds.miny;
+        result = [];
+        for(stop in d.stops) {
+            c = d.stops[stop];
+            x = (c[0] - bounds.minx) / w * mainCanvas.width;
+            y = (c[1] - bounds.miny) / h * mainCanvas.height;
+            result[stop] = [x, y];
+        }
+        return result;
     }
 
+
+    //
+    // Programmatically create the canvas
+    //
+    mainCanvas = document.createElement("canvas");
+    mainCanvas.id = "mainCanvas";
+    mainCanvas.width = 600;
+    mainCanvas.height = 600;
+    document.body.appendChild(mainCanvas);
 
     Q.all([
         $.getJSON('data/gva-stops.json'),
         $.getJSON('data/gva-first-morning.json')
     ]).spread(
         function (rawStopData, rawPassengerData) {
-            stopData = rawStopData;
+            stopCoords = normalizedCoords(rawStopData);
             passengerData = rawPassengerData;
-            onData();
+            drawNextEvent();
         },
         logAjaxError
     ).fail( function (error) { console.log(error); });
+
 
 });
