@@ -11,13 +11,13 @@ require.config({
 require(['jquery', 'lib/q', 'lib/hot-cold-map', 'lib/request_anim_frame', 'lib/transform'], function ($, Q, hcmap) {
     "use strict";
 
-    var stopCoords, passengerData, mainCanvas;
+    var stopCoords, passengerData, mainCanvas, currentDate, timespan;
 
-    // Works for pseudo iso8601 (would need to fix the backend to return proper iso8601)
-    function parseDate(value) {
+    // Works for pseudo iso8601
+    function parseDateWithMinutePrecision(value) {
         var a;
         a = /^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2}):(\d{2}(?:\.\d*)?)Z?$/.exec(value);
-        return new Date(Date.UTC(+a[1], +a[2] - 1, +a[3], +a[4], +a[5], +a[6]));
+        return new Date(Date.UTC(+a[1], +a[2] - 1, +a[3], +a[4], +a[5], 0));
     }
 
 
@@ -27,7 +27,9 @@ require(['jquery', 'lib/q', 'lib/hot-cold-map', 'lib/request_anim_frame', 'lib/t
     }
 
 
-    function draw(event) {
+    function draw() {
+        timespan.innerHTML = currentDate;
+        var event = passengerData.shift();
         var coords, ctx;
 
         coords = stopCoords[event.s];
@@ -41,12 +43,15 @@ require(['jquery', 'lib/q', 'lib/hot-cold-map', 'lib/request_anim_frame', 'lib/t
     function drawNextEvent() {
         if (passengerData.length) {
             requestAnimFrame(drawNextEvent);
-            draw(passengerData.pop());
+            draw();
         }
     }
 
 
     function dataReady() {
+        if(passengerData.length) {
+            currentDate = passengerData[0].t;
+        }
         drawNextEvent();
     }
 
@@ -60,15 +65,13 @@ require(['jquery', 'lib/q', 'lib/hot-cold-map', 'lib/request_anim_frame', 'lib/t
         maxAbsDelta = 0;
         for (i = 0; i < data.length; i++) {
             event = data[i];
-            maxAbsDelta = Math.max(maxAbsDelta, Math.abs(event.delta));
-            event.t = parseDate(event.t);
+            maxAbsDelta = Math.max(maxAbsDelta, Math.abs(event.d));
+            event.t = parseDateWithMinutePrecision(event.t);
         }
-
         for (i = 0; i < data.length; i++) {
             event = data[i];
-            event.delta /= maxAbsDelta;
+            event.d /= maxAbsDelta;
         }
-
         return data;
     }
 
@@ -106,6 +109,18 @@ require(['jquery', 'lib/q', 'lib/hot-cold-map', 'lib/request_anim_frame', 'lib/t
     ctx.fillStyle = 'rgb(0,0,0)';
     ctx.fillRect(0, 0, mainCanvas.width, mainCanvas.height);
 
+
+    //
+    // Add the timer to the page
+    //
+    document.body.appendChild(document.createElement("br"));
+    timespan = document.createElement("span");
+    timespan.id = "timer";
+    document.body.appendChild(timespan);
+
+    //
+    // Fetch data in parallel
+    //
     Q.all([
             $.getJSON('data/gva-stops.json'),
             $.getJSON('data/gva-first-morning.json')
