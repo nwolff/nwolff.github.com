@@ -8,7 +8,7 @@ require.config({
 });
 
 
-require(['jquery', 'lib/q',  'lib/hot-cold-map', 'lib/request_anim_frame', 'lib/transform'], function ($, Q, hcmap) {
+require(['jquery', 'lib/q', 'lib/hot-cold-map', 'lib/request_anim_frame', 'lib/transform'], function ($, Q, hcmap) {
     "use strict";
 
     var stopCoords, passengerData, mainCanvas;
@@ -21,7 +21,7 @@ require(['jquery', 'lib/q',  'lib/hot-cold-map', 'lib/request_anim_frame', 'lib/
     }
 
 
-    function logAjaxError(jqXHR, textStatus, errorThrown) {
+    function logAjaxError(jqXHR, textStatus) {
         console.log("error " + textStatus);
         console.log("incoming Text " + jqXHR.responseText);
     }
@@ -29,18 +29,20 @@ require(['jquery', 'lib/q',  'lib/hot-cold-map', 'lib/request_anim_frame', 'lib/
 
     function draw(event) {
         var coords, ctx;
-  
+
         coords = stopCoords[event.s];
         console.log([coords, event.d, event.t]);
 
-        ctx = mainCanvas.getContext("2d");        
+        ctx = mainCanvas.getContext("2d");
         hcmap.drawScore(ctx, coords[0], coords[1], event.d);
     }
 
 
     function drawNextEvent() {
-        requestAnimFrame(drawNextEvent);
-        draw(passengerData.pop());
+        if (passengerData.length) {
+            requestAnimFrame(drawNextEvent);
+            draw(passengerData.pop());
+        }
     }
 
 
@@ -50,9 +52,9 @@ require(['jquery', 'lib/q',  'lib/hot-cold-map', 'lib/request_anim_frame', 'lib/
 
 
     /**
-    * - Parses the date inside each event
-    * - Normalizes the deltas to make them between -1 and 1
-    */
+     * - Parses the date inside each event
+     * - Normalizes the deltas to make them between -1 and 1
+     */
     function normalizedPassengerData(data) {
         var maxAbsDelta, event, i;
         maxAbsDelta = 0;
@@ -75,12 +77,12 @@ require(['jquery', 'lib/q',  'lib/hot-cold-map', 'lib/request_anim_frame', 'lib/
     function normalizedCoords(d) {
         var t, bounds, result, stop, c;
         bounds = d.bounds;
-        var t = new Transform();
+        t = new Transform();
         t.scale(mainCanvas.width / (bounds.maxx - bounds.minx),
-                mainCanvas.height / (bounds.maxy - bounds.miny));
+            mainCanvas.height / (bounds.maxy - bounds.miny));
         t.translate(-bounds.minx, -bounds.miny);
         result = [];
-        for(stop in d.stops) {
+        for (stop in d.stops) {
             c = d.stops[stop];
             result[stop] = t.transformPoint(c[0], c[1]);
         }
@@ -105,16 +107,18 @@ require(['jquery', 'lib/q',  'lib/hot-cold-map', 'lib/request_anim_frame', 'lib/
     ctx.fillRect(0, 0, mainCanvas.width, mainCanvas.height);
 
     Q.all([
-        $.getJSON('data/gva-stops.json'),
-        $.getJSON('data/gva-first-morning.json')
-    ]).spread(
+            $.getJSON('data/gva-stops.json'),
+            $.getJSON('data/gva-first-morning.json')
+        ]).spread(
         function (rawStopData, rawPassengerData) {
             stopCoords = normalizedCoords(rawStopData);
             passengerData = normalizedPassengerData(rawPassengerData);
             dataReady();
         },
         logAjaxError
-    ).fail( function (error) { console.log(error); });
+    ).fail(function (error) {
+            console.log(error);
+        });
 
 
 });
