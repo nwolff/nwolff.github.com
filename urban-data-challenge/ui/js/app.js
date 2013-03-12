@@ -101,17 +101,19 @@ require(['jquery', 'lib/q', 'lib/hot-cold-map', 'moment', 'lib/request_anim_fram
         return result;
     }
 
-
     mainCanvas = document.createElement("canvas");
     mainCanvas.id = "mainCanvas";
     mainCanvas.width = 600;
     mainCanvas.height = 600;
     document.body.appendChild(mainCanvas);
+
     // Zero at bottom left
     var ctx;
     ctx = mainCanvas.getContext("2d");
     ctx.translate(0, mainCanvas.height);
     ctx.scale(1, -1);
+
+    // Paint background black
     ctx.fillStyle = 'rgb(0,0,0)';
     ctx.fillRect(0, 0, mainCanvas.width, mainCanvas.height);
 
