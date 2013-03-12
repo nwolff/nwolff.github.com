@@ -12,7 +12,7 @@ require.config({
 require(['jquery', 'lib/q', 'lib/hot-cold-map', 'moment', 'lib/request_anim_frame', 'lib/transform'], function ($, Q, hcmap, moment) {
     "use strict";
 
-    var stopCoords, passengerData, mainCanvas, currentDate, timespan;
+    var stopCoords, passengerData, mainCanvas, currentDate, timespan, fadecount = 0;
 
 
     function logAjaxError(jqXHR, textStatus) {
@@ -29,7 +29,8 @@ require(['jquery', 'lib/q', 'lib/hot-cold-map', 'moment', 'lib/request_anim_fram
         timespan.innerHTML = currentDate.format('YYYY-MM-DD HH:mm');
 
         // Fade
-        ctx.fillStyle = 'rgba(0,0,0,0.01)';
+        ctx.fillStyle = 'rgba(0,0,0,0.02)'
+        ctx.globalCompositeOperation = "darker";
         ctx.fillRect(0, 0, mainCanvas.width, mainCanvas.height);
 
         // Collect passenger events for the current minute
