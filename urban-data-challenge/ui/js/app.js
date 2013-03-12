@@ -22,22 +22,32 @@ require(['jquery', 'lib/q', 'lib/hot-cold-map', 'moment', 'lib/request_anim_fram
 
 
     function draw() {
-        var ctx, event, coords;
+        var ctx, events, event, i, coords;
 
-        event = passengerData.shift();
-        coords = stopCoords[event.s];
+        events = [];
+        while(passengerData.length && currentDate.diff(passengerData[0].t) == 0) {
+            events.push(passengerData.shift());
+        }
 
         timespan.innerHTML = currentDate.format('YYYY-MM-DD HH:mm');
-        console.log([coords, event.d, event.t]);
+        currentDate.add('minutes', 1);
 
         ctx = mainCanvas.getContext("2d");
-        hcmap.drawScore(ctx, coords[0], coords[1], event.d);
+        for(i = 0; i < events.length; i++) {
+            event = events[i];
+            coords = stopCoords[event.s];
+            if(coords) {
+                hcmap.drawScore(ctx, coords[0], coords[1], event.d);
+            } else {
+                console.log("unknown stop " + event.s);
+            }
+        }
     }
 
 
-    function drawNextEvent() {
+    function animate() {
         if (passengerData.length) {
-            requestAnimFrame(drawNextEvent);
+            requestAnimFrame(animate);
             draw();
         }
     }
@@ -47,12 +57,12 @@ require(['jquery', 'lib/q', 'lib/hot-cold-map', 'moment', 'lib/request_anim_fram
         if (passengerData.length) {
             currentDate = passengerData[0].t;
         }
-        drawNextEvent();
+        animate();
     }
 
 
     /**
-     * - Parses the date inside each event
+     * - Parses the date inside each event with minute precision
      * - Normalizes the deltas to make them between -1 and 1
      */
     function normalizedPassengerData(data) {
@@ -61,8 +71,9 @@ require(['jquery', 'lib/q', 'lib/hot-cold-map', 'moment', 'lib/request_anim_fram
         for (i = 0; i < data.length; i++) {
             event = data[i];
             maxAbsDelta = Math.max(maxAbsDelta, Math.abs(event.d));
-            event.t = moment(event.t);
+            event.t = moment(event.t).seconds(0);
         }
+        console.log('max abs delta was ' + maxAbsDelta);
         for (i = 0; i < data.length; i++) {
             event = data[i];
             event.d /= maxAbsDelta;
@@ -125,6 +136,5 @@ require(['jquery', 'lib/q', 'lib/hot-cold-map', 'moment', 'lib/request_anim_fram
     ).fail(function (error) {
             console.log(error);
         });
-
 
 });
