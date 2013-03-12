@@ -3,12 +3,13 @@
 // Have to use lowercase 'jquery' otherwise jQuery won't recognise it's been loaded via AMD.
 require.config({
     paths: {
-        'jquery': 'lib/jquery-1.9.1'
+        'jquery': 'lib/jquery-1.9.1',
+        'moment': 'lib/moment'
     }
 });
 
 
-require(['jquery', 'lib/q', 'lib/hot-cold-map', 'lib/moment', 'lib/request_anim_frame', 'lib/transform'], function ($, Q, hcmap) {
+require(['jquery', 'lib/q', 'lib/hot-cold-map', 'moment', 'lib/request_anim_frame', 'lib/transform'], function ($, Q, hcmap, moment) {
     "use strict";
 
     var stopCoords, passengerData, mainCanvas, currentDate, timespan;
@@ -21,16 +22,16 @@ require(['jquery', 'lib/q', 'lib/hot-cold-map', 'lib/moment', 'lib/request_anim_
 
 
     function draw() {
-        var ctx,event,coords;
+        var ctx, event, coords;
 
         event = passengerData.shift();
         coords = stopCoords[event.s],
 
-        timespan.innerHTML = currentDate.format('YYYY-MM-DD HH:mm');
+            timespan.innerHTML = currentDate.format('YYYY-MM-DD HH:mm');
         console.log([coords, event.d, event.t]);
 
         ctx = mainCanvas.getContext("2d"),
-        hcmap.drawScore(ctx, coords[0], coords[1], event.d);
+            hcmap.drawScore(ctx, coords[0], coords[1], event.d);
     }
 
 
