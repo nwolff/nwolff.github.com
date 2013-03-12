@@ -8,17 +8,10 @@ require.config({
 });
 
 
-require(['jquery', 'lib/q', 'lib/hot-cold-map', 'lib/request_anim_frame', 'lib/transform'], function ($, Q, hcmap) {
+require(['jquery', 'lib/q', 'lib/hot-cold-map', 'lib/moment', 'lib/request_anim_frame', 'lib/transform'], function ($, Q, hcmap) {
     "use strict";
 
     var stopCoords, passengerData, mainCanvas, currentDate, timespan;
-
-    // Works for pseudo iso8601
-    function parseDateWithMinutePrecision(value) {
-        var a;
-        a = /^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2}):(\d{2}(?:\.\d*)?)Z?$/.exec(value);
-        return new Date(Date.UTC(+a[1], +a[2] - 1, +a[3], +a[4], +a[5], 0));
-    }
 
 
     function logAjaxError(jqXHR, textStatus) {
@@ -28,14 +21,15 @@ require(['jquery', 'lib/q', 'lib/hot-cold-map', 'lib/request_anim_frame', 'lib/t
 
 
     function draw() {
-        timespan.innerHTML = currentDate;
-        var event = passengerData.shift();
-        var coords, ctx;
+        var ctx,event,coords;
 
-        coords = stopCoords[event.s];
+        event = passengerData.shift();
+        coords = stopCoords[event.s],
+
+        timespan.innerHTML = currentDate.format('YYYY-MM-DD HH:mm');
         console.log([coords, event.d, event.t]);
 
-        ctx = mainCanvas.getContext("2d");
+        ctx = mainCanvas.getContext("2d"),
         hcmap.drawScore(ctx, coords[0], coords[1], event.d);
     }
 
@@ -49,7 +43,7 @@ require(['jquery', 'lib/q', 'lib/hot-cold-map', 'lib/request_anim_frame', 'lib/t
 
 
     function dataReady() {
-        if(passengerData.length) {
+        if (passengerData.length) {
             currentDate = passengerData[0].t;
         }
         drawNextEvent();
@@ -66,7 +60,7 @@ require(['jquery', 'lib/q', 'lib/hot-cold-map', 'lib/request_anim_frame', 'lib/t
         for (i = 0; i < data.length; i++) {
             event = data[i];
             maxAbsDelta = Math.max(maxAbsDelta, Math.abs(event.d));
-            event.t = parseDateWithMinutePrecision(event.t);
+            event.t = moment(event.t);
         }
         for (i = 0; i < data.length; i++) {
             event = data[i];
@@ -108,7 +102,6 @@ require(['jquery', 'lib/q', 'lib/hot-cold-map', 'lib/request_anim_frame', 'lib/t
     ctx.scale(1, -1);
     ctx.fillStyle = 'rgb(0,0,0)';
     ctx.fillRect(0, 0, mainCanvas.width, mainCanvas.height);
-
 
     //
     // Add the timer to the page
