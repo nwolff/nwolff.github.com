@@ -29,8 +29,8 @@ require(['jquery', 'lib/q', 'lib/hot-cold-map', 'moment', 'lib/request_anim_fram
         timespan.innerHTML = currentDate.format('YYYY-MM-DD HH:mm');
 
         // Fade
-        //ctx.fillStyle = 'rgb(0,0,0)';
-        //ctx.fillRect(0, 0, mainCanvas.width, mainCanvas.height);
+        ctx.fillStyle = 'rgba(0,0,0,0.01)';
+        ctx.fillRect(0, 0, mainCanvas.width, mainCanvas.height);
 
         // Collect passenger events for the current minute
         while (passengerData.length && currentDate.diff(passengerData[0].t) == 0) {
