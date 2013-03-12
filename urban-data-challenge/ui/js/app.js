@@ -25,13 +25,13 @@ require(['jquery', 'lib/q', 'lib/hot-cold-map', 'moment', 'lib/request_anim_fram
         var ctx, event, coords;
 
         event = passengerData.shift();
-        coords = stopCoords[event.s],
+        coords = stopCoords[event.s];
 
-            timespan.innerHTML = currentDate.format('YYYY-MM-DD HH:mm');
+        timespan.innerHTML = currentDate.format('YYYY-MM-DD HH:mm');
         console.log([coords, event.d, event.t]);
 
-        ctx = mainCanvas.getContext("2d"),
-            hcmap.drawScore(ctx, coords[0], coords[1], event.d);
+        ctx = mainCanvas.getContext("2d");
+        hcmap.drawScore(ctx, coords[0], coords[1], event.d);
     }
 
 
@@ -88,9 +88,6 @@ require(['jquery', 'lib/q', 'lib/hot-cold-map', 'moment', 'lib/request_anim_fram
     }
 
 
-    //
-    // Programmatically create the canvas
-    //
     mainCanvas = document.createElement("canvas");
     mainCanvas.id = "mainCanvas";
     mainCanvas.width = 600;

@@ -36,7 +36,7 @@ define(['../lib/hot-cold-map', '../lib/stats.min', '../lib/request_anim_frame'],
         drawScore(ctx, 250, 70, 0); // invisible
 
         // A trail of circles turning around it
-        time = new Date().getTime() * 0.002;
+        time = new Date().getTime() * 0.0015;
         snakeLen = 20;
         for (i = 0; i < snakeLen; i += 1) {
             score = 1 - i / snakeLen;
@@ -57,7 +57,6 @@ define(['../lib/hot-cold-map', '../lib/stats.min', '../lib/request_anim_frame'],
 
 
     function demo() {
-        // Programmatically create the canvas
         mainCanvas = document.createElement("canvas");
         mainCanvas.id = "mainCanvas";
         mainCanvas.width = 500;

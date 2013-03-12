@@ -22,11 +22,8 @@ define(['jquery'], function ($) {
 
 
     function drawData(stopData) {
-        var mainCanvas, ctx, bounds, width, height, stops, stop_name, stop_coords;
+        var mainCanvas, ctx, bounds, stops, stop_name, stop_coords;
 
-        //
-        // Programmatically create the canvas
-        //
         mainCanvas = document.createElement("canvas");
         mainCanvas.id = "mainCanvas";
         mainCanvas.width = 600;
@@ -44,9 +41,6 @@ define(['jquery'], function ($) {
         ctx.scale(18, 18);
         ctx.translate(-(bounds.minx * 100), -(bounds.miny * 100));
 
-        width = bounds.maxx - bounds.minx;
-        height = bounds.maxy - bounds.miny;
-
         ctx.fillStyle = 'rgb(255,0,0)';
         drawCircle(ctx, 6.15, 46.2);
 
@@ -55,7 +49,6 @@ define(['jquery'], function ($) {
         stops = stopData.stops;
         for (stop_name in stops) {
             stop_coords = stops[stop_name];
-            // console.log('drawing ' + stop_name + ": " + stop_coords[0] + ", " + stop_coords[1]);
             drawCircle(ctx, stop_coords[0], stop_coords[1]);
         }
     }
@@ -65,7 +58,7 @@ define(['jquery'], function ($) {
 
         gvaStopsPromise.done(drawData);
 
-        gvaStopsPromise.fail(function (jqXHR, textStatus, errorThrown) {
+        gvaStopsPromise.fail(function (jqXHR, textStatus) {
             console.log("error " + textStatus);
             console.log("incoming Text " + jqXHR.responseText);
         });

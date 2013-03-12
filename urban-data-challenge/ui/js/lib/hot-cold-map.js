@@ -41,7 +41,7 @@ define(['./mout/math/clamp'], function (clamp) {
 
 
     function createCircleCanvas(color) {
-        var canvas, ctx;
+        var canvas;
         canvas = document.createElement("canvas");
         canvas.width = canvas.height = radius * 3;
         drawBlurredCircle(canvas.getContext("2d"), offset, offset, color);
