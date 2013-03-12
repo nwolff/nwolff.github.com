@@ -13,17 +13,11 @@ require(['jquery', 'lib/q',  'lib/hot-cold-map', 'lib/request_anim_frame', 'lib/
 
     var stopCoords, passengerData, mainCanvas;
 
-
     // Works for pseudo iso8601 (would need to fix the backend to return proper iso8601)
     function parseDate(value) {
         var a;
-        if (typeof value === 'string') {
-            a = /^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2}):(\d{2}(?:\.\d*)?)Z?$/.exec(value);
-            if (a) {
-                return new Date(Date.UTC(+a[1], +a[2] - 1, +a[3], +a[4], +a[5], +a[6]));
-            }
-        }
-        return value;
+        a = /^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2}):(\d{2}(?:\.\d*)?)Z?$/.exec(value);
+        return new Date(Date.UTC(+a[1], +a[2] - 1, +a[3], +a[4], +a[5], +a[6]));
     }
 
 
@@ -34,16 +28,13 @@ require(['jquery', 'lib/q',  'lib/hot-cold-map', 'lib/request_anim_frame', 'lib/
 
 
     function draw(event) {
-        var coords, delta, date, ctx, score;
+        var coords, ctx;
   
         coords = stopCoords[event.s];
-        delta = event.d;
-        score = delta / 50; // XXX arbitrary
-        // date = parseDate(event.t);
-        // console.log([coords, delta, date]);
+        console.log([coords, event.d, event.t]);
 
         ctx = mainCanvas.getContext("2d");        
-        hcmap.drawScore(ctx, coords[0], coords[1], score);
+        hcmap.drawScore(ctx, coords[0], coords[1], event.d);
     }
 
 
@@ -53,18 +44,30 @@ require(['jquery', 'lib/q',  'lib/hot-cold-map', 'lib/request_anim_frame', 'lib/
     }
 
 
-    function drawMarkers() {
-        console.log('draw markers');
-        // Use one of these?
-        // http://projects.nickstakenburg.com/tipped/documentation
-        // http://craigsworks.com/projects/qtip2/demos/#ajax
-        // http://www.opentip.org/
+    function dataReady() {
+        drawNextEvent();
     }
 
 
-    function dataReady() {
-        drawMarkers();
-        drawNextEvent();
+    /**
+    * - Parses the date inside each event
+    * - Normalizes the deltas to make them between -1 and 1
+    */
+    function normalizedPassengerData(data) {
+        var maxAbsDelta, event, i;
+        maxAbsDelta = 0;
+        for (i = 0; i < data.length; i++) {
+            event = data[i];
+            maxAbsDelta = Math.max(maxAbsDelta, Math.abs(event.delta));
+            event.t = parseDate(event.t);
+        }
+
+        for (i = 0; i < data.length; i++) {
+            event = data[i];
+            event.delta /= maxAbsDelta;
+        }
+
+        return data;
     }
 
 
@@ -107,7 +110,7 @@ require(['jquery', 'lib/q',  'lib/hot-cold-map', 'lib/request_anim_frame', 'lib/
     ]).spread(
         function (rawStopData, rawPassengerData) {
             stopCoords = normalizedCoords(rawStopData);
-            passengerData = rawPassengerData;
+            passengerData = normalizedPassengerData(rawPassengerData);
             dataReady();
         },
         logAjaxError
