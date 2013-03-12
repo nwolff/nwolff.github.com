@@ -1,3 +1,3 @@
-Requires pandas from pip (not from apt): 
+Requires pandas from pip (not from apt):
 
-'sudo pip install pandas'
+'sudo pip install -U pandas'
