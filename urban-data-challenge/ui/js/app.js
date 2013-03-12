@@ -22,26 +22,29 @@ require(['jquery', 'lib/q', 'lib/hot-cold-map', 'moment', 'lib/request_anim_fram
 
 
     function draw() {
-        var ctx, events, event, i, coords;
+        var ctx = mainCanvas.getContext("2d")
+            , event, coords;
 
-        events = [];
-        while(passengerData.length && currentDate.diff(passengerData[0].t) == 0) {
-            events.push(passengerData.shift());
-        }
-
+        // Display current time
         timespan.innerHTML = currentDate.format('YYYY-MM-DD HH:mm');
-        currentDate.add('minutes', 1);
 
-        ctx = mainCanvas.getContext("2d");
-        for(i = 0; i < events.length; i++) {
-            event = events[i];
+        // Fade
+        //ctx.fillStyle = 'rgb(0,0,0)';
+        //ctx.fillRect(0, 0, mainCanvas.width, mainCanvas.height);
+
+        // Collect passenger events for the current minute
+        while (passengerData.length && currentDate.diff(passengerData[0].t) == 0) {
+            event = passengerData.shift();
             coords = stopCoords[event.s];
-            if(coords) {
+            if (coords) {
                 hcmap.drawScore(ctx, coords[0], coords[1], event.d);
             } else {
                 console.log("unknown stop " + event.s);
             }
         }
+
+        // Bump time
+        currentDate.add('minutes', 1);
     }
 
 
